@@ -14,6 +14,7 @@ order_router = APIRouter(
 
 @order_router.get("/")
 async def hello(Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -25,6 +26,7 @@ async def hello(Authorize: AuthJWT=Depends()):
 
 @order_router.post('/order')
 async def place_an_order(order: OrderModel, db: db_session, Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -57,6 +59,7 @@ async def place_an_order(order: OrderModel, db: db_session, Authorize: AuthJWT=D
 
 @order_router.get('/orders')
 async def list_all_orders(db: db_session, Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -78,6 +81,7 @@ async def list_all_orders(db: db_session, Authorize: AuthJWT=Depends()):
 
 @order_router.get('/orders/{id}')
 async def get_order_by_id(id: int, db: db_session, Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -99,6 +103,7 @@ async def get_order_by_id(id: int, db: db_session, Authorize: AuthJWT=Depends())
 
 @order_router.get('/user/orders')
 async def get_user_orders(db: db_session, Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -110,3 +115,26 @@ async def get_user_orders(db: db_session, Authorize: AuthJWT=Depends()):
     current_user = db.query(User).filter(User.username==user).first()
 
     return jsonable_encoder(current_user.orders)
+
+
+@order_router.get('/user/order/{order_id}', response_model=OrderModel)
+async def get_specific_order(order_id: int, db: db_session, Authorize: AuthJWT=Depends()):
+    # protect the route
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid Token")
+    
+    subject = Authorize.get_jwt_subject()
+
+    current_user = db.query(User).filter(User.username==subject).first()
+
+    orders = current_user.orders
+
+    for o in orders:
+        if o.id == order_id:
+            return o
+
+    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="No order with such order id")

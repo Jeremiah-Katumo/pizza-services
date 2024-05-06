@@ -16,6 +16,7 @@ auth_router = APIRouter(
 
 @auth_router.get("/")
 async def hello(Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_required()
     except Exception as e:
@@ -76,6 +77,7 @@ async def login(user: LogInModel, db: db_session, Authorize: AuthJWT=Depends()):
 
 @auth_router.get('/refresh')
 async def refresh_token(Authorize: AuthJWT=Depends()):
+    # protect the route
     try:
         Authorize.jwt_refresh_token_required()
     except Exception as e:
