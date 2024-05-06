@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from models import auth_models
-from routes.auth_routes import auth_router
-from routes.orders_routes import order_router
+from .routes.auth_routes import auth_router
+from .routes.orders_routes import order_router
 from .database import engine
 
 app = FastAPI()
