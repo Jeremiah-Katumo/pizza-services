@@ -20,8 +20,7 @@ async def hello(Authorize: AuthJWT=Depends()):
         Authorize.jwt_required()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Token"
-        )
+                            detail="Invalid Token")
     
     return {"message": "Hello World"}
 
@@ -32,15 +31,13 @@ async def signup(user: SignUpModel, db: db_session):
 
     if db_email is not None:
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST, 
-            detail="User with the email already exists"
-        )
+                            detail="User with the email already exists")
     
     db_username = db.query(User).filter(User.username==user.username).first()
 
     if db_username is not None:
         return HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with the username already exists"
-        )
+                            detail="User with the username already exists")
 
     new_user = User(
         username=user.username,
@@ -72,8 +69,7 @@ async def login(user: LogInModel, db: db_session, Authorize: AuthJWT=Depends()):
         return jsonable_encoder(response)
     
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Invalid Username Or Password"
-    )
+                        detail="Invalid Username Or Password")
 
 
 # refresh tokens
@@ -84,8 +80,7 @@ async def refresh_token(Authorize: AuthJWT=Depends()):
         Authorize.jwt_refresh_token_required()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Please provide a valid refresh token"
-        )
+                            detail="Please provide a valid refresh token")
     
     current_user = Authorize.get_jwt_subject()
     

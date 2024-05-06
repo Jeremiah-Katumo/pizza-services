@@ -18,8 +18,7 @@ async def hello(Authorize: AuthJWT=Depends()):
         Authorize.jwt_required()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Token"    
-        )
+                            detail="Invalid Token")
     
     return {"message": "Hello World"}
 
@@ -30,8 +29,7 @@ async def place_an_order(order: OrderModel, db: db_session, Authorize: AuthJWT=D
         Authorize.jwt_required()
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Token"    
-        )
+                            detail="Invalid Token")
     
     current_user = Authorize.get_jwt_subject()
 
@@ -55,3 +53,24 @@ async def place_an_order(order: OrderModel, db: db_session, Authorize: AuthJWT=D
     }
 
     return jsonable_encoder(response)
+
+
+@order_router.get('/orders')
+async def list_all_orders(db: db_session, Authorize: AuthJWT=Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid Token")
+    
+    current_user = Authorize.get_jwt_subject()
+
+    user = db.query(User).filter(User.username==current_user).first()
+
+    if user.is_staff:
+        orders = db.query(Order).all()
+
+        return jsonable_encoder(orders)
+    
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="You are not a superuser")
