@@ -21,3 +21,9 @@ class SignUpModel(BaseModel):
                 "is_active":True
             }
         }
+
+
+class LogInModel(BaseModel):
+    username:  str | None
+    password:  str
+    

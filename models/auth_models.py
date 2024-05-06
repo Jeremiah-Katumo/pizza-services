@@ -1,14 +1,14 @@
 from sqlalchemy import Column, Integer, Boolean, Text, String, ForeignKey
 from sqlalchemy.orm import Relationship
 from sqlalchemy_utils.types import ChoiceType
-from ..database import Base
+from database import Base
 
 
 
 class User(Base):
     __tablename__ = "user"
 
-    id = Column(Integer(max=10), primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True, unique=True)
     username = Column(String(25), unique=True)
     email = Column(String(80), unique=True)
     password = Column(Text, nullable=True)
@@ -36,7 +36,7 @@ class Order(Base):
 
     __tablename__ = "orders"
 
-    id = Column(Integer(max=10), primary_key=True, unique=True)
+    id = Column(Integer, primary_key=True, unique=True)
     quantity = Column(Integer, nullable=False)
     order_status = Column(ChoiceType(choices=ORDER_STATUSES), default="PENDING")
     pizza_size = Column(ChoiceType(choices=PIZZA_SIZES), default="SMALL")
