@@ -57,8 +57,8 @@ async def signup(user: SignUpModel, db: db_session):
 
 
 @auth_router.post("/login", status_code=status.HTTP_200_OK)
-async def login(user: LogInModel, Authorize: AuthJWT=Depends()):
-    db_user = db_session.query(User).filter(User.username==user.username).first()
+async def login(user: LogInModel, db: db_session, Authorize: AuthJWT=Depends()):
+    db_user = db.query(User).filter(User.username==user.username).first()
 
     if db_user and check_password_hash(db_user.password, user.password):
         access_token = Authorize.create_access_token(subject=db_user.username)
