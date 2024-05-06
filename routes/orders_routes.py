@@ -4,6 +4,7 @@ from fastapi_jwt_auth import AuthJWT
 from models.auth_models import User, Order
 from schemas.orders_schemas import OrderModel
 from database import db_session
+from fastapi.encoders import jsonable_encoder
 
 
 order_router = APIRouter(
@@ -45,3 +46,12 @@ async def place_an_order(order: OrderModel, db: db_session, Authorize: AuthJWT=D
 
     db.add(user)
     db.commit()
+
+    response = {
+        "pizza_size": new_order.pizza_size,
+        "quantity": new_order.quantity,
+        "id": new_order.id,
+        "order_status": new_order.order_status
+    }
+
+    return jsonable_encoder(response)
