@@ -117,7 +117,7 @@ async def get_user_orders(db: db_session, Authorize: AuthJWT=Depends()):
     return jsonable_encoder(current_user.orders)
 
 
-@order_router.get('/user/order/{order_id}', response_model=OrderModel)
+@order_router.get('/user/order/{order_id}')
 async def get_specific_order(order_id: int, db: db_session, Authorize: AuthJWT=Depends()):
     # protect the route
     try:
@@ -134,7 +134,25 @@ async def get_specific_order(order_id: int, db: db_session, Authorize: AuthJWT=D
 
     for o in orders:
         if o.id == order_id:
-            return o
+            return jsonable_encoder(o)
 
     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                         detail="No order with such order id")
+
+
+@order_router.put('/order/update/{order_id}')
+async def update_order(order_id: int, order: OrderModel, db: db_session, Authorize: AuthJWT=Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid Token")
+    
+    order_to_update = db.query(Order).filter(Order.id==order_id).first()
+
+    order_to_update.quantity = order.quantity
+    order_to_update.pizza_size = order.pizza_size
+
+    db.commit()
+
+    return jsonable_encoder(order_to_update)
