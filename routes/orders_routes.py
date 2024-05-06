@@ -74,3 +74,39 @@ async def list_all_orders(db: db_session, Authorize: AuthJWT=Depends()):
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                         detail="You are not a superuser")
+
+
+@order_router.get('/orders/{id}')
+async def get_order_by_id(id: int, db: db_session, Authorize: AuthJWT=Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid Token")
+    
+    user = Authorize.get_jwt_subject()
+
+    current_user = db.query(User).filter(User.username==user).first()
+
+    if current_user.is_staff:
+        order = db.query(Order).filter(Order.id==id).first()
+
+        return jsonable_encoder(order)
+    
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="User not allowed to carry out request")
+
+
+@order_router.get('/user/orders')
+async def get_user_orders(db: db_session, Authorize: AuthJWT=Depends()):
+    try:
+        Authorize.jwt_required()
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                            detail="Invalid Token")
+    
+    user = Authorize.get_jwt_subject()
+
+    current_user = db.query(User).filter(User.username==user).first()
+
+    return jsonable_encoder(current_user.orders)
