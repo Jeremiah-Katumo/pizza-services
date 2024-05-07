@@ -155,7 +155,14 @@ async def update_order(order_id: int, order: OrderModel, db: db_session, Authori
 
     db.commit()
 
-    return jsonable_encoder(order_to_update)
+    response = {
+            "id": order_to_update.id,
+            "quantity": order_to_update.quantity,
+            "pizza_size": order_to_update.pizza_size,
+            "order_status": order_to_update.order_status
+    }
+
+    return jsonable_encoder(response)
 
 
 @order_router.patch('/order/update/{order_id}')
@@ -178,4 +185,11 @@ async def update_order_status(order_id: int, order: OrderStatusModel, Authorize:
 
         db_session.commit()
 
-        return jsonable_encoder(order_to_update)
+        response = {
+            "id": order_to_update.id,
+            "quantity": order_to_update.quantity,
+            "pizza_size": order_to_update.pizza_size,
+            "order_status": order_to_update.order_status
+        }
+
+        return jsonable_encoder(response)
