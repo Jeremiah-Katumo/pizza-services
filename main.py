@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from models import auth_models
-from routes.auth_routes import auth_router
-from routes.orders_routes import order_router
+from routes import auth_routes
+from routes import orders_routes
 from database import engine
 from fastapi_jwt_auth import AuthJWT
-from schemas import Settings
+from .schemas.settings_schemas import Settings
 
 app = FastAPI()
 
@@ -18,5 +18,5 @@ def home():
 def get_config():
     return Settings()
 
-app.include_router(auth_router)
-app.include_router(order_router)
+app.include_router(auth_routes.auth_router)
+app.include_router(orders_routes.order_router)
