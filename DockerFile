@@ -1,11 +1,20 @@
+# parent image
 FROM python:3.12
 
+# specify the working directory in the container
 WORKDIR /app
 
+# copy the file containing packages
+COPY requirements.txt .
+
+# install dependencies (layer caching)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# copy the source code to /app
 COPY . .
 
-RUN pip install -r requirements.txt
-
+# expose port to the outside world
 EXPOSE 5000
 
-CMD {"uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"}
+# run commands: run the app inside the container
+CMD {"uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"}
