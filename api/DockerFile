@@ -1,6 +1,8 @@
 # parent image
 FROM python:3.12
 
+RUN mkdir -p /app
+
 # specify the working directory in the container
 WORKDIR /app
 
@@ -14,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # expose port to the outside world
-EXPOSE 5000
+EXPOSE 80
 
 # run commands: run the app inside the container
-CMD {"uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"}
+CMD {"uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "80"}
